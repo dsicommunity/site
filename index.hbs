@@ -2,45 +2,46 @@
 
 {{!-- Home hero --}}
 {{#is "home"}}
-  {{>hero}}
+    {{>hero}}
 {{/is}}
 
 {{!-- Everything in a container --}}
 <div class="container wrapper">
-  <section class="section section-resources" id="resources">
-    <div class="resources" data-filter-position="{{@custom.resources_filter_position}}" data-category="all"
-      data-filter-count="{{#get "tags" filter="slug:[{{@custom.resources_filter_slugs}}]"}}{{tags.length}}{{else}}0{{/get}}">
-      {{#match @custom.resources_filter_position "!=" "hidden"}}
-        {{> resources-filter}}
-      {{/match}}
+    {{!-- Blog section - rendered if the /blog/ page has the tag #home-blog --}}
+    {{#get "posts" filter="tag:blog" include="tags,authors,tiers" limit="3"}}
+        {{#if posts}}
+            <section class="section section-blog flex flex-wrap">
+                <h2 class="section-title m-b-0">{{t "Blog"}}</h2>
+                {{#link href="/blog/" class="btn--view m-l-sm"}}
+                    <span class="m-r-sm">{{t "View all"}}</span>
+                    {{> icon name="arrow-right" size="14"}}
+                {{/link}}
+                <div class="grid post-feed m-t m-b-lg">
+                    {{#foreach posts}}
+                        {{> post-card}}
+                    {{/foreach}}
+                </div>
+            </section>
+        {{/if}}
+    {{/get}}
 
-      <div class="resources-feed js-resources-feed" data-feed-layout="{{@custom.resources_feed_layout}}" data-not-found="{{t "No resources found"}}">
-        {{#foreach posts}}
-          {{> resource-card}}
-        {{/foreach}}
-      </div>
-    </div>
+    <section class="section section-resources" id="resources">
+        <div class="resources" data-filter-position="{{@custom.resources_filter_position}}" data-category="all"
+             data-filter-count="{{#get "tags"
+                                       filter="slug:[{{@custom.resources_filter_slugs}}]"}}{{tags.length}}{{else}}0{{/get}}">
+            {{#match @custom.resources_filter_position "!=" "hidden"}}
+                {{> resources-filter}}
+            {{/match}}
 
-    {{!-- Pagination --}}
-    {{> pagination type="load-more"}}
-  </section>
-
-  {{!-- Blog section - rendered if the /blog/ page has the tag #home-blog --}}
-  {{#get "posts" filter="tag:blog" include="tags,authors,tiers" limit="3"}}
-    {{#if posts}}
-      <section class="section section-blog flex flex-wrap">
-        <h2 class="section-title m-b-0">{{t "Blog"}}</h2>
-        {{#link href="/blog/" class="btn--view m-l-sm"}}
-          <span class="m-r-sm">{{t "View all"}}</span>
-          {{> icon name="arrow-right" size="14"}}
-        {{/link}}
-        <div class="grid post-feed m-t m-b-lg">
-          {{#foreach posts}}
-            {{> post-card}}
-          {{/foreach}}
+            <div class="resources-feed js-resources-feed" data-feed-layout="{{@custom.resources_feed_layout}}"
+                 data-not-found="{{t "No resources found"}}">
+                {{#foreach posts}}
+                    {{> resource-card}}
+                {{/foreach}}
+            </div>
         </div>
-      </section>
-    {{/if}}
-  {{/get}}
 
+        {{!-- Pagination --}}
+        {{> pagination type="load-more"}}
+    </section>
 </div>
