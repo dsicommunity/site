@@ -7,6 +7,39 @@
 
 {{!-- Everything in a container --}}
 <div class="container wrapper">
+    {{#get "posts" filter="featured:true+id:-{{id}}" limit="5" include="authors,tags" as |featured|}}
+        {{#if posts}}
+            <span class="section-title sm">{{t "Featured"}}</span>
+            <div class="sidebar__section">
+                {{#foreach featured}}
+                    {{#link href=url class="sidebar-story"}}
+                        {{#if feature_image}}
+                            <figure class="sidebar-story__media m-r">
+                                {{> image
+                                        image_type="post"
+                                        image_class="lazyload"
+                                        image_url=feature_image
+                                        size_xs=true
+                                        size_s=true
+                                }}
+                            </figure>
+                        {{/if}}
+                        <div class="sidebar-story__content">
+                            <h3 class="sidebar-story__title">{{title}}</h3>
+
+                            <div class="sidebar-story__info">
+                                <time datetime="{{date format='YYYY-MM-DD'}}" class="sidebar-story__date">
+                                    {{date published_at format="DD MMM YYYY"}}
+                                </time>
+                            </div>
+                        </div>
+                    {{/link}}
+                {{/foreach}}
+            </div>
+        {{/if}}
+    {{/get}}
+
+
     {{#get "posts" filter="tag:news" include="tags,authors,tiers" limit="6"}}
         {{#if posts}}
             <section class="section section-blog flex flex-wrap">
