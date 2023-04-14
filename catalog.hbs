@@ -1,0 +1,57 @@
+{{!< default}}
+
+{{!-- Everything inside the #post tags pulls data from the post --}}
+{{#post}}
+
+    <div class="container wrapper">
+
+        {{!-- Hero --}}
+        {{> post-hero
+                image_style="default"
+        }}
+
+        <section class="section section-blog flex flex-wrap">
+            <h2 class="section-title m-b-0">Technology Catalog</h2>
+            {{#link href="/technology-catalog/" class="btn--view m-l-sm"}}
+                <span class="m-r-sm">{{t "View all"}}</span>
+                {{> icon name="arrow-right" size="14"}}
+            {{/link}}
+        </section>
+
+        <section class="section section-resources" id="resources">
+            <div class="resources" data-filter-position="{{@custom.resources_filter_position}}" data-category="all"
+                 data-filter-count="{{#get "tags"
+                                           filter="slug:[{{@custom.resources_filter_slugs}}]"}}{{tags.length}}{{else}}0{{/get}}">
+                {{#match @custom.resources_filter_position "!=" "hidden"}}
+                    {{> resources-filter}}
+                {{/match}}
+
+                <div class="resources-feed js-resources-feed" data-feed-layout="{{@custom.resources_feed_layout}}"
+                     data-not-found="{{t "No resources found"}}">
+                    {{#foreach posts}}
+                        {{> resource-card}}
+                    {{/foreach}}
+                </div>
+            </div>
+
+            {{!-- Pagination --}}
+            {{> pagination type="load-more"}}
+        </section>
+
+    </div>
+
+    {{!< default}}
+
+    {{!-- Home hero --}}
+    {{#is "home"}}
+        {{>hero}}
+    {{/is}}
+
+    {{!-- Table of contents --}}
+    {{#has tag="#toc"}}
+        {{#if access}}
+            {{> toc}}
+        {{/if}}
+    {{/has}}
+
+{{/post}}
