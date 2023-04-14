@@ -26,12 +26,12 @@
   </section>
 
   {{!-- Blog section - rendered if the /blog/ page has the tag #home-blog --}}
-  {{#get "posts" filter="tag:hash-blog" include="tags,authors,tiers" limit="3"}}
+  {{#get "posts" filter="tag:blog" include="tags,authors,tiers" limit="3"}}
     {{#if posts}}
       <section class="section section-blog flex flex-wrap">
         <h2 class="section-title m-b-0">{{t "Blog"}}</h2>
         {{#link href="/blog/" class="btn--view m-l-sm"}}
-          <span class="m-r-sm">{{t "View all"}}</span> 
+          <span class="m-r-sm">{{t "View all"}}</span>
           {{> icon name="arrow-right" size="14"}}
         {{/link}}
         <div class="grid post-feed m-t m-b-lg">
