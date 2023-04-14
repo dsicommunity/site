@@ -156,7 +156,8 @@
       },
       "resources_filter_slugs": {
         "type": "text",
-        "group": "homepage"
+        "group": "homepage",
+        "default": "cicd,security,observability,orchestration,provisioning"
       },
       "resources_filter_position": {
         "type": "select",

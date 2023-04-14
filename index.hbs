@@ -25,6 +25,14 @@
         {{/if}}
     {{/get}}
 
+    <section class="section section-blog flex flex-wrap">
+        <h2 class="section-title m-b-0">Technology Catalog</h2>
+        {{#link href="/technology-catalog/" class="btn--view m-l-sm"}}
+            <span class="m-r-sm">{{t "View all"}}</span>
+            {{> icon name="arrow-right" size="14"}}
+        {{/link}}
+    </section>
+
     <section class="section section-resources" id="resources">
         <div class="resources" data-filter-position="{{@custom.resources_filter_position}}" data-category="all"
              data-filter-count="{{#get "tags"
