@@ -1,149 +1,153 @@
-const { series, watch, src, dest, parallel } = require('gulp');
-const pump = require('pump');
-const beeper = require('beeper');
-const browserSync = require('browser-sync').create();
-const zip = require('gulp-zip');
-const concat = require('gulp-concat');
-const rename = require('gulp-rename');
-const uglify = require('gulp-uglify');
-const babel = require('gulp-babel');
-const cssnano = require('cssnano');
+// const GhostAdminAPI = require('@tryghost/admin-api');
+// const gulp = require('gulp');
+//
+//
+// var autoprefixer = require('autoprefixer');
+// var colorFunction = require('postcss-color-function');
+// var cssnano = require('cssnano');
+// var customProperties = require('postcss-custom-properties');
+// var easyimport = require('postcss-easy-import');
+// var sourcemaps = require('gulp-sourcemaps');
+// var postcss = require('gulp-postcss');
+// var livereload = require('gulp-livereload');
+// var nodemon = require('gulp-nodemon');
+//
+// function uploader(done) {
+//     const filename = require('./package.json').name + '.zip';
+//
+//     const api = new GhostAdminAPI({
+//         // Replace URL with your own
+//         url: 'http://localhost:2368',
+//         version: "v3",
+//         // Obtain API key by creating a new integration at http://localhost:2368/ghost/#/settings/integrations
+//         key: 'c0356be5e176eb158509d5f780:6439b70b45141c000140485c:0603f49f0f8afab64d5b6a464642ee24a224043f168ffdeef3c38bf1912ab55a'
+//     });
+//
+//     let data = { file: `./dist/${filename}` }
+//
+//     return api.themes.upload(data)
+//         .catch(done);
+// }
+//
+// // const build = series(css, js);
+// // exports.deploy = series(build, zipper, uploader);
+//
+// gulp.task('css', function (done) {
+//     const processors = [
+//         easyimport,
+//         customProperties,
+//         colorFunction(),
+//         autoprefixer({browsers: ['last 2 versions']}),
+//         cssnano()
+//     ];
+//     gulp.src('assets/css/*.css')
+//         // .on('error', swallowError)
+//         .pipe(sourcemaps.init())
+//         .pipe(postcss(processors))
+//         .pipe(sourcemaps.write('.'))
+//         .pipe(gulp.dest('dist'))
+//         .pipe(livereload())
+//         .on('end', done);
+// });
+// gulp.task('upload', function () {
+//     uploader();
+// });
+// gulp.task('default', gulp.series('css'));
+//
+// function css(done) {
+//     // Omitted because it's in a regular Casper theme
+// }
+//
+// function js(done) {
+//     // Omitted because it's in a regular Casper theme
+// }
+//
+// function zipper(done) {
+//     // Omitted because it's in a regular Casper theme
+// }
+// import dependencies
 
-const postcss = require('gulp-postcss');
-const postcssPresetEnv = require('postcss-preset-env');
-const postcssNested = require('postcss-nested');
-const postcssImport = require('postcss-import');
-const postcssMixins = require('postcss-mixins');
+const GhostAdminAPI = require('@tryghost/admin-api');
 
-// Define base folders
-const asset_src = 'assets/';
-const asset_dist = 'assets/dist/';
-const npm_src   = 'node_modules/';
-const is_sourcemap_needed = false;
+var gulp = require('gulp'),
+    watch = require('gulp-watch'),
+    zip = require('gulp-zip');
 
-// Browsersync init
-const serve = done => {
-  browserSync.init({
-    port: 3368,
-    proxy: 'http://localhost:2368/'
-  });
-  done();
-};
+const sass = require('gulp-sass')(require('sass'));
 
-// Handle reload
-const reload = done => {
-  browserSync.reload();
-  done();
-};
+// define some variables
+var source = '.',
+    destination = 'dist',
+    distribution = 'dist';
 
-// Handle errors
-const handleError = done => (
-  (err) => {
-    if (err) {
-      beeper();
-    }
-    return done(err);
-  }
-);
+async function uploader(done) {
+    const name = require('./package.json').name;
+    const api = new GhostAdminAPI({
+        // Replace URL with your own
+        url: 'http://localhost:2368',
+        version: "v3",
+        // Obtain API key by creating a new integration at http://localhost:2368/ghost/#/settings/integrations
+        key: '6439b70b45141c000140485c:0603f49f0f8afab64d5b6a464642ee24a224043f168ffdeef3c38bf1912ab55a'
+    });
 
-// Handle CSS
-const css = done => {
-  const processors = [
-    postcssImport(),
-    postcssMixins(),
-    postcssNested(),
-    postcssPresetEnv({
-      browsers: '> .5% or last 2 versions',
-      stage: 0,
-      features: {
-        'nesting-rules': true
-      }
-    }),
-    cssnano({preset: 'advanced'})
-  ];
+    await api.themes.upload({file: `./dist/${name}.zip`});
+    await api.themes.activate(name);
+}
 
-  pump(
-    [
-      src('assets/css/app.css', {sourcemaps: is_sourcemap_needed}),
-      postcss(processors),
-      rename({suffix: '.min'}),
-      dest(asset_dist, {sourcemaps: '.'})
-    ],
-    handleError(done)
-  );
-};
+// task: compile sass to css
+gulp.task('sass', function () {
+    return gulp.src(source + 'assets/scss/**/*.scss') // source
+        .pipe(sass())   // compile sass()
+        .pipe(gulp.dest(source + 'assets/css')); // generate
+});
 
-// Handle Js
-const js = done => {
-  pump(
-    [
-      src([
-        `${npm_src}@tryghost/content-api/umd/content-api.min.js`,
-        `${npm_src}lazysizes/lazysizes.min.js`,
-        `${npm_src}fitvids/dist/fitvids.min.js`,
-        `${npm_src}fslightbox/index.js`,
-        `${npm_src}tocbot/dist/tocbot.min.js`,
-        `${npm_src}headroom.js/dist/headroom.min.js`,
-        `${asset_src}js/script.js`
-      ], 
-      { sourcemaps: is_sourcemap_needed }),
-      babel({
-        'presets': [
-          [
-            '@babel/preset-env', {
-              'modules': false
-            }
-          ]
-        ]
-      }),
-      concat('app.js'),
-      rename({suffix: '.min'}),
-      uglify(),
-      dest(asset_dist, { sourcemaps: '.' })
-    ],
-    handleError(done)
-  );
-};
+// task: package to zip
+gulp.task('package', function (done) {
+    gulp.src([
+        source + '/**/*', // include all in source folder
+        '!' + source + '/node_modules', // exclude node_modles
+        '!' + source + '/node_modules/**/*', // exclude sub folders of node_modles
+        '!' + source + '/*.png' // exclude screenshots in source folder
+    ], {base: source})
+        .pipe(zip('site.zip'))
+        .pipe(gulp.dest(distribution));
+    done();
+});
 
-// Handle Zipping
-const zipper = done => {
-  const targetDir = 'dist/';
-  const themeName = require('./package.json').name;
-  const filename = `${themeName}.zip`;
-  
-  pump(
-    [
-      src([ 
-        '**',
-        '!node_modules/**', 
-        '!dist/**',
-        '!assets/dist/*.map',
-        '!assets/icon*.png',
-        '!package-lock.json',
-        '!.github',
-        '!**/demo*'
-      ]),
-      zip(filename),
-      dest(targetDir)
-    ],
-    handleError(done)
-  );
-};
+// watch changes
+gulp.task('watch', function () {
+    gulp.src([
+        source + '/**/*',
+        '!' + source + '/node_modules', // exclude node_modles
+        '!' + source + '/node_modules/**/*' // exclude sub folders of node_modles
+    ], {base: source})
+        .pipe(watch(source, {base: source}))
+        .pipe(gulp.dest(destination));
+});
 
-// Handle tasks
-const cssWatch = () => watch('assets/css/**', series(css, reload));
-const jsWatch = () => watch('assets/js/**', series(js, reload));
-const hbsWatch = () => watch([
-  '*.hbs', 
-  'partials/**/*.hbs', 
-  'members/**/*.hbs',
-  '!node_modules/**/*.hbs'], series(reload));
-const gulpWatch = () => watch('gulpfile.js', );
-const watcher = parallel(cssWatch, jsWatch, hbsWatch);
-const build = series(css, js);
-const dev = series(build, serve, watcher);
+// task: clean old files
+gulp.task('clean:build', function (done) {
+    // deleteSync(distribution + '/fizzy.zip'); // remove old zip file
+    done();
+});
 
-exports.css = css;
-exports.js = js;
-exports.zip = series(build, zipper);
-exports.default = dev;
+// task: clean without images
+gulp.task('clean:dev', function (done) {
+    del([
+        destination + '/**/*', // remove all old files
+        '!' + destination + 'assets/images', // exclude images folder
+        '!' + destination + 'assets/images/**/*' // exclude image files
+    ]);
+    done();
+});
+
+
+gulp.task('upload', function () {
+    uploader();
+});
+// dev
+gulp.task('dev', gulp.series('clean:dev', ['sass', 'watch']));
+
+// package
+gulp.task('build', gulp.series('sass', 'package'));
+gulp.task('upload');

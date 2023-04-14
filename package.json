@@ -1,15 +1,9 @@
 {
     "name": "site",
-    "description": "Rinne Ghost Theme",
-    "demo": "https://rinne.bironthemes.com",
-    "version": "1.0.3",
+    "description": "Ghost Theme",
+    "version": "1.0.10",
     "engines": {
         "ghost": ">=5.0.0"
-    },
-    "author": {
-        "name": "Biron Themes",
-        "email": "bironthemes@gmail.com",
-        "url": "https://bironthemes.com"
     },
     "gpm": {
         "type": "theme",
@@ -24,13 +18,8 @@
         "theme",
         "ghost-theme"
     ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/bironthemes/rinne-ghost.git"
-    },
     "scripts": {
-        "dev": "gulp",
-        "zip": "gscan . && gulp zip",
+        "docker": "gulp build && gulp upload",
         "test": "gscan ."
     },
     "dependencies": {
@@ -39,7 +28,6 @@
         "@tryghost/content-api": "^1.11.5",
         "beeper": "^2.1.0",
         "browser-sync": "^2.28.3",
-        "cssnano": "^5.1.15",
         "cssnano-preset-advanced": "^5.3.10",
         "fitvids": "^2.1.1",
         "fslightbox": "^3.4.1",
@@ -48,10 +36,8 @@
         "gulp": "^4.0.2",
         "gulp-babel": "^8.0.0",
         "gulp-concat": "^2.6.1",
-        "gulp-postcss": "^9.0.1",
         "gulp-rename": "^2.0.0",
         "gulp-uglify": "^3.0.2",
-        "gulp-zip": "^5.1.0",
         "headroom.js": "^0.12.0",
         "lazysizes": "^5.3.2",
         "postcss": "^8.4.21",
@@ -61,6 +47,7 @@
         "postcss-nested": "^5.0.6",
         "postcss-preset-env": "^7.8.3",
         "pump": "^3.0.0",
+        "sass": "^1.62.0",
         "tiny-slider": "^2.9.4",
         "tocbot": "^4.20.1"
     },
@@ -197,5 +184,23 @@
                 "group": "post"
             }
         }
+    },
+    "devDependencies": {
+        "@tryghost/admin-api": "^1.13.5",
+        "autoprefixer": "^10.4.14",
+        "cssnano": "^6.0.0",
+        "del": "^7.0.0",
+        "gulp-gitignore": "^0.1.0",
+        "gulp-livereload": "^4.0.2",
+        "gulp-nodemon": "^2.5.0",
+        "gulp-postcss": "^9.0.1",
+        "gulp-sass": "^5.1.0",
+        "gulp-sourcemaps": "^3.0.0",
+        "gulp-util": "^3.0.8",
+        "gulp-watch": "^5.0.1",
+        "gulp-zip": "^5.1.0",
+        "postcss-color-function": "^4.1.0",
+        "postcss-custom-properties": "^13.1.5",
+        "postcss-easy-import": "^4.0.0"
     }
 }

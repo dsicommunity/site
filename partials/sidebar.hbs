@@ -35,7 +35,7 @@
   {{!-- Sidebar latest posts --}}
   {{#get "posts" filter="featured:false+id:-{{id}}" limit="3" include="authors,tags" as |latest|}}
     <span class="section-title sm">{{t "Latest"}}</span>
-    <div class="sidebar__section">   
+    <div class="sidebar__section">
       {{#foreach latest}}
         {{#link href=url class="sidebar-story"}}
           {{#if feature_image}}
@@ -79,7 +79,7 @@
                 {{@site.description}}
               {{/if}}
             </div>
-            {{> subscribe-form 
+            {{> subscribe-form
               input_label="sidebar-input-label"
             }}
           </div>
